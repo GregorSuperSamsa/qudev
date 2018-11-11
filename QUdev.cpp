@@ -87,12 +87,12 @@ QVector<QUdev::UdevDevice> QUdev::enumerate()
                             device.serial       = QString(udev_device_get_sysattr_value(udevParentDevice, "serial"));
 #ifdef DEBUG_INFO
                             qDebug() << endl;
-                            qDebug() << qPrintable(device.path);
-                            qDebug() << qPrintable(device.vendorId);
-                            qDebug() << qPrintable(device.productId);
-                            qDebug() << qPrintable(device.product);
-                            qDebug() << qPrintable(device.manufacturer);
-                            qDebug() << qPrintable(device.serial);
+                            qDebug() << "Product:     " << qPrintable(device.product);
+                            qDebug() << "Path:        " << qPrintable(device.path);
+                            qDebug() << "Manufacturer:" << qPrintable(device.manufacturer);
+                            qDebug() << "Serial:      " << qPrintable(device.serial);
+                            qDebug() << "Vendor id:   " << qPrintable(device.vendorId);
+                            qDebug() << "Product id:  " << qPrintable(device.productId);
 #endif
                             devicesList.append(device);
                         }

@@ -68,33 +68,36 @@ QVector<QUdev::UdevDevice> QUdev::enumerate()
         {
             udev_list_entry_foreach(ptrDeviceEntry, ptrDevicesList)
             {
-                const char* path = nullptr;
-                path = udev_list_entry_get_name(ptrDeviceEntry);
-                if (nullptr != path)
+                if (nullptr != ptrDeviceEntry)
                 {
-                    udevDevice = udev_device_new_from_syspath(ptrUdev, path);
-                    if (nullptr != udevDevice)
+                    const char* path = nullptr;
+                    path = udev_list_entry_get_name(ptrDeviceEntry);
+                    if (nullptr != path)
                     {
-                        udevParentDevice = udev_device_get_parent_with_subsystem_devtype(udevDevice, getParentSubsystem().toLocal8Bit().constData(), "usb_device");
-                        if (nullptr != udevParentDevice)
+                        udevDevice = udev_device_new_from_syspath(ptrUdev, path);
+                        if (nullptr != udevDevice)
                         {
-                            UdevDevice device;
-                            device.path         = QString(udev_device_get_devnode(udevDevice));
-                            device.vendorId     = QString(udev_device_get_sysattr_value(udevParentDevice, "idVendor"));
-                            device.productId    = QString(udev_device_get_sysattr_value(udevParentDevice, "idProduct"));
-                            device.product      = QString(udev_device_get_sysattr_value(udevParentDevice, "product"));
-                            device.manufacturer = QString(udev_device_get_sysattr_value(udevParentDevice, "manufacturer"));
-                            device.serial       = QString(udev_device_get_sysattr_value(udevParentDevice, "serial"));
+                            udevParentDevice = udev_device_get_parent_with_subsystem_devtype(udevDevice, getParentSubsystem().toLocal8Bit().constData(), "usb_device");
+                            if (nullptr != udevParentDevice)
+                            {
+                                UdevDevice device;
+                                device.path         = QString(udev_device_get_devnode(udevDevice));
+                                device.vendorId     = QString(udev_device_get_sysattr_value(udevParentDevice, "idVendor"));
+                                device.productId    = QString(udev_device_get_sysattr_value(udevParentDevice, "idProduct"));
+                                device.product      = QString(udev_device_get_sysattr_value(udevParentDevice, "product"));
+                                device.manufacturer = QString(udev_device_get_sysattr_value(udevParentDevice, "manufacturer"));
+                                device.serial       = QString(udev_device_get_sysattr_value(udevParentDevice, "serial"));
 #ifdef DEBUG_INFO
-                            qDebug() << endl;
-                            qDebug() << "Product:     " << qPrintable(device.product);
-                            qDebug() << "Path:        " << qPrintable(device.path);
-                            qDebug() << "Manufacturer:" << qPrintable(device.manufacturer);
-                            qDebug() << "Serial:      " << qPrintable(device.serial);
-                            qDebug() << "Vendor id:   " << qPrintable(device.vendorId);
-                            qDebug() << "Product id:  " << qPrintable(device.productId);
+                                qDebug() << endl;
+                                qDebug() << "Product:     " << qPrintable(device.product);
+                                qDebug() << "Path:        " << qPrintable(device.path);
+                                qDebug() << "Manufacturer:" << qPrintable(device.manufacturer);
+                                qDebug() << "Serial:      " << qPrintable(device.serial);
+                                qDebug() << "Vendor id:   " << qPrintable(device.vendorId);
+                                qDebug() << "Product id:  " << qPrintable(device.productId);
 #endif
-                            devicesList.append(device);
+                                devicesList.append(device);
+                            }
                         }
                     }
                 }

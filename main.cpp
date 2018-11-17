@@ -11,10 +11,14 @@ int main(int argc, char *argv[])
 
     QUdev udev;
 
-    udev.setSubsystem("tty");
-    udev.setParentSubsystem("usb");
-    udev.enumerate();
+    if (udev.initialize())
+    {
+        udev.setSubsystem("tty");
+        udev.setParentSubsystem("usb");
+        udev.enumerate();
 
+        udev.monitor();
+    }
 
     return a.exec();
 }

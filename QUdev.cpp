@@ -3,10 +3,13 @@
 #include <QDebug>
 #include <QtConcurrent/QtConcurrentRun>
 
-#define DEBUG_INFO
+//#define DEBUG_INFO
 
 
-QUdev::QUdev(QObject *parent) : QObject(parent) {}
+QUdev::QUdev(QObject *parent) : QObject(parent)
+{
+    qRegisterMetaType<QUdev::UdevDevice>("QUdev::UdevDevice");
+}
 
 QUdev::~QUdev()
 {
@@ -15,16 +18,16 @@ QUdev::~QUdev()
 
 bool QUdev::initialize()
 {
-    ptrUdev = udev_new();
-    return (nullptr != ptrUdev);
+    ptrUdevLib = udev_new();
+    return (nullptr != ptrUdevLib);
 }
 
 void QUdev::uninitialize()
 {
-    if (ptrUdev != nullptr)
+    if (ptrUdevLib != nullptr)
     {
-        udev_unref(ptrUdev);
-        ptrUdev = nullptr;
+        udev_unref(ptrUdevLib);
+        ptrUdevLib = nullptr;
     }
 }
 
@@ -48,16 +51,16 @@ QString QUdev::getParentSubsystem() const
     return parentSubsystem;
 }
 
-QVector<QUdev::UdevDevice> QUdev::enumerate()
+QVector<QUdev::UdevDevice> QUdev::getUdevDeviceList()
 {
-    QVector <UdevDevice> devicesList(0);
+    QVector <UdevDevice> udevDeviceList(0);
     struct udev_enumerate  *ptrUdevEnumeration = nullptr;
     struct udev_list_entry *ptrUdevDeviceList  = nullptr;
     struct udev_list_entry *ptrUdevDeviceEntry = nullptr;
     struct udev_device     *ptrUdevDevice      = nullptr;
 
 
-    ptrUdevEnumeration = udev_enumerate_new(ptrUdev);
+    ptrUdevEnumeration = udev_enumerate_new(ptrUdevLib);
     if (nullptr != ptrUdevEnumeration)
     {
         udev_enumerate_add_match_subsystem(ptrUdevEnumeration, getSubsystem().toLatin1().constData());
@@ -74,11 +77,11 @@ QVector<QUdev::UdevDevice> QUdev::enumerate()
                     path = udev_list_entry_get_name(ptrUdevDeviceEntry);
                     if (nullptr != path)
                     {
-                        ptrUdevDevice = udev_device_new_from_syspath(ptrUdev, path);
-                        UdevDevice device = getUdevDeviceAttributes(ptrUdevDevice);
+                        ptrUdevDevice = udev_device_new_from_syspath(ptrUdevLib, path);
+                        UdevDevice device = getUdevDevice(ptrUdevDevice);
                         if (device.isValid)
                         {
-                            devicesList.append(device);
+                            udevDeviceList.append(device);
                         }
                     }
                 }
@@ -88,10 +91,10 @@ QVector<QUdev::UdevDevice> QUdev::enumerate()
         udev_enumerate_unref(ptrUdevEnumeration);
         ptrUdevEnumeration = nullptr;
     }
-    return devicesList;
+    return udevDeviceList;
 }
 
-QUdev::UdevDevice QUdev::getUdevDeviceAttributes(udev_device* ptrUdevDevice)
+QUdev::UdevDevice QUdev::getUdevDevice(udev_device* ptrUdevDevice)
 {
     UdevDevice device;
 
@@ -99,10 +102,14 @@ QUdev::UdevDevice QUdev::getUdevDeviceAttributes(udev_device* ptrUdevDevice)
     {
         struct udev_device *ptrUdevParentDevice = nullptr;
 
-        ptrUdevParentDevice = udev_device_get_parent_with_subsystem_devtype(ptrUdevDevice, getParentSubsystem().toLocal8Bit().constData(), "usb_device");
+        ptrUdevParentDevice = udev_device_get_parent_with_subsystem_devtype(
+                    ptrUdevDevice
+                    , getParentSubsystem().toLocal8Bit().constData()
+                    , "usb_device");
         if (nullptr != ptrUdevParentDevice)
         {
             device.action       = getUdevDeviceAction(ptrUdevDevice);
+            //
             device.path         = QString(udev_device_get_devnode(ptrUdevDevice));
             device.vendorId     = QString(udev_device_get_sysattr_value(ptrUdevParentDevice, "idVendor")).toUpper();
             device.productId    = QString(udev_device_get_sysattr_value(ptrUdevParentDevice, "idProduct")).toUpper();
@@ -111,7 +118,9 @@ QUdev::UdevDevice QUdev::getUdevDeviceAttributes(udev_device* ptrUdevDevice)
             device.product      = QString(udev_device_get_sysattr_value(ptrUdevParentDevice, "product"));
             device.manufacturer = QString(udev_device_get_sysattr_value(ptrUdevParentDevice, "manufacturer"));
             device.serial       = QString(udev_device_get_sysattr_value(ptrUdevParentDevice, "serial"));
+            //
             device.isValid = true;
+
 #ifdef DEBUG_INFO
             qDebug() << endl;
             qDebug() << "Product:     " << qPrintable(device.product);
@@ -153,36 +162,43 @@ QUdev::UDEV_DEVICE_ACTION_TYPE QUdev::getUdevDeviceAction(udev_device* ptrUdevDe
     return actionType;
 }
 
-void QUdev::monitor()
+void QUdev::startMonitoring()
 {
-    QObject::connect(this, SIGNAL(matchFound(QString)), this, SLOT(onMatchFound(QString)));
+    isMonitoring = true;
+    QtConcurrent::run(this, &QUdev::monitor);
+}
 
-    QtConcurrent::run([=]
-    {
-        struct udev_device *dev;
-        struct udev_monitor *mon;
-
-        mon = udev_monitor_new_from_netlink(ptrUdev, "udev");
-        udev_monitor_filter_add_match_subsystem_devtype(mon, "tty", NULL);
-        udev_monitor_enable_receiving(mon);
-
-        while (1)
-        {
-            dev = udev_monitor_receive_device(mon);
-            if (nullptr != dev)
-            {
-                getUdevDeviceAttributes(dev);
-
-                udev_device_unref(dev);
-            }
-
-            QThread::usleep(1000*1000);
-        }
-    });
+void QUdev::stopMonitoring()
+{
+    isMonitoring = false;
 
 }
 
-void QUdev::onMatchFound(QString s)
+void QUdev::monitor()
 {
-    qDebug() << s;
+
+    struct udev_device *dev;
+    struct udev_monitor *mon;
+
+    mon = udev_monitor_new_from_netlink(ptrUdevLib, "udev");
+    udev_monitor_filter_add_match_subsystem_devtype(mon, "tty", NULL);
+    udev_monitor_enable_receiving(mon);
+
+    while (isMonitoring)
+    {
+        dev = udev_monitor_receive_device(mon);
+        if (nullptr != dev)
+        {
+            UdevDevice result = getUdevDevice(dev);
+            if (result.isValid)
+            {
+                emit udevDeviceFound(result);
+            }
+
+            udev_device_unref(dev);
+        }
+
+        QThread::usleep(300 * 1000);
+    }
+
 }

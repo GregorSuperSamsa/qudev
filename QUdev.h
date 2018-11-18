@@ -4,6 +4,7 @@
 #include <libudev.h>
 #include <QObject>
 #include <QVector>
+#include <QFuture>
 
 
 class QUdev : public QObject
@@ -45,22 +46,24 @@ public:
         UDEV_DEVICE_ACTION_TYPE action = UDEV_DEVICE_ACTION_UNKNOWN;
         bool isValid = false;
     };
-    QVector<UdevDevice> enumerate();
-    UdevDevice getUdevDeviceAttributes(udev_device* ptrUdevDevice);
+    QVector<UdevDevice> getUdevDeviceList();
+    UdevDevice getUdevDevice(udev_device* ptrUdevDevice);
 
-    void monitor();
+    void startMonitoring();
+    void stopMonitoring();
 
 private:
-    struct udev *ptrUdev = nullptr;
+    struct udev *ptrUdevLib = nullptr;
 
     QString subsystem;
     QString parentSubsystem;
 
-private slots:
-    void onMatchFound(QString s);
+    QFuture<void> monitorTask;
+    bool isMonitoring = false;
+    void monitor();
 
 signals:
-    void matchFound(QString s);
+    void udevDeviceFound(QUdev::UdevDevice device);
 
 };
 

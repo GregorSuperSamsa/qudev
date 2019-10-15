@@ -1,13 +1,13 @@
 # QUdev
 
-Qt wrapper around the linux libudev library. Used for monitoring and enumerating of tty devices
+Qt wrapper around the linux libudev library. Used for monitoring and enumerating of tty devices.
 
 
 ### Compiling
 
 Add to your .pro file:
 ```
-*LIBS += -ludev
+LIBS += -ludev
 ```
 
 ### Usage
@@ -26,9 +26,22 @@ udev->setSubsystem("tty");
 // Set parent subsystem to monitor
 udev->setParentSubsystem("usb");
 
-// Start auto monitoring
+// Get list of all found devices
+udev->getUdevDeviceList();
+
+```
+
+### Realtime monitoring
+```
+// Start realtime monitoring of the selected subsystem
 udev->startMonitoring();
 
-// Stop auto monitoring
+// Stop realtime monitoring of the selected subsystem
 udev->stopMonitoring();
-```    
+
+```
+
+If there is a change in the observed subsystem, a *SIGNAL* is emitted
+```
+udevDeviceFound(QUdev::UdevDevice);
+```

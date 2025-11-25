@@ -43,7 +43,7 @@ system's devices and live hot-plug events.
 
 ### Command line
 
-    git clone https://github.com/yourname/qudev.git
+    git clone https://github.com/GregorSuperSamsa/qudev
     cd qudev
 
     # Configure (adjust CMAKE_PREFIX_PATH to your Qt if needed)

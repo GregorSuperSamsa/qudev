@@ -1,0 +1,49 @@
+#------------------------------------------------------------------------------
+# Doxyfile for the qudev project
+#------------------------------------------------------------------------------
+
+# Basic project info
+PROJECT_NAME           = "qudev"
+PROJECT_BRIEF          = "Qt wrapper around libudev + QML viewer"
+PROJECT_NUMBER         = "1.0"
+
+# Use the README as the main page if present
+USE_MDFILE_AS_MAINPAGE = README.md
+
+# Input configuration
+INPUT                  = include src examples
+RECURSIVE              = YES
+FILE_PATTERNS          = *.h \
+                         *.cpp \
+                         *.qml
+
+# You can restrict what gets documented; for now we only want public API docs
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_ANON_NSPACES   = NO
+
+# Treat Qt-style comments nicely
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = YES
+
+# Source browsing
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+# Warnings (tweak as you like)
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+
+# Output format
+GENERATE_HTML          = YES
+HTML_OUTPUT            = docs/html
+
+GENERATE_LATEX         = NO
+
+# Misc
+QUIET                  = NO
+WARN_LOGFILE           =

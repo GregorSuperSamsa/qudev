@@ -1,0 +1,44 @@
+# CMake build directories
+build/
+build-*/
+cmake-build-*/
+
+# CMake generated files (for in-tree builds, if they ever happen)
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+cmake_install.cmake
+Makefile
+*.ninja
+*.ninja_deps
+*.ninja_log
+
+# Doxygen generated docs
+docs/html/
+
+# Qt Creator / CLion / IDE user files
+*.user
+*.pro.user
+*.pro.user.*
+CMakeLists.txt.user*
+.idea/
+.vscode/
+
+# Compiled objects / libs
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+
+# Qt resource / translation artifacts
+*.qrc.dep
+*.qm
+
+# OS-specific junk
+.DS_Store
+Thumbs.db

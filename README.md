@@ -2,7 +2,12 @@
 
 `qudev` is a small C++/Qt6 library that wraps [libudev](https://www.freedesktop.org/software/systemd/man/libudev.html) (udev) on Linux and provides a QML/QtQuick example viewer for enumerating and monitoring devices.
 
-![qudev udev viewer demo](docs/qudev-viewer-demo.gif)
+<p align="center">
+  <img src="docs/qudev-viewer-demo.gif"
+       alt="qudev udev viewer demo"
+       width="700" />
+</p>
+
 ---
 
 ## Features

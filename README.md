@@ -54,7 +54,7 @@
 
 This will produce:
 
-- `build/src/libqudev.a` (or `.so` / `.dll` depending on your platform)
+- `build/src/libqudev.a` (or `.so`)
 - `build/examples/udevviewer/udevviewer` – the example app
 
 ### Qt Creator

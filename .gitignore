@@ -3,7 +3,7 @@ build/
 build-*/
 cmake-build-*/
 
-# CMake generated files (for in-tree builds, if they ever happen)
+# CMake generated files
 CMakeCache.txt
 CMakeFiles/
 CTestTestfile.cmake

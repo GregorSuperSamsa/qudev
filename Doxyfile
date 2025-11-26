@@ -1,3 +1,11 @@
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2025 Georgi Georgiev, Samsa Ltd. <georgi@samsa.io>
+#
+# qudev - Qt wrapper around libudev
+#
+# This file is part of the qudev project.
+# See the LICENSE file in the project root for full license text.
+
 #------------------------------------------------------------------------------
 # Doxyfile for the qudev project
 #------------------------------------------------------------------------------

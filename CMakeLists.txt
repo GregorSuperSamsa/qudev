@@ -1,3 +1,11 @@
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2025 Georgi Georgiev, Samsa Ltd. <georgi@samsa.io>
+#
+# qudev - Qt wrapper around libudev
+#
+# This file is part of the qudev project.
+# See the LICENSE file in the project root for full license text.
+
 cmake_minimum_required(VERSION 3.23)
 project(qudev LANGUAGES CXX)
 
@@ -23,10 +31,6 @@ if(QUDEV_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
-# ------------------------------------------------------------------------------
-# Doxygen documentation target (visible in QtCreator as "doc")
-# ------------------------------------------------------------------------------
-
 if(QUDEV_BUILD_DOCS)
   find_package(Doxygen QUIET)
 
@@ -34,7 +38,6 @@ if(QUDEV_BUILD_DOCS)
     message(STATUS "Doxygen found: ${DOXYGEN_EXECUTABLE}")
 
     add_custom_target(docs
-      # Ensure the output directory exists (Doxygen won't create the parent "docs")
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/docs/html
       COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -42,6 +45,6 @@ if(QUDEV_BUILD_DOCS)
       VERBATIM
     )
   else()
-    message(STATUS "Doxygen not found, 'doc' target will not be available")
+    message(STATUS "Doxygen not found, 'docs' target will not be available")
   endif()
 endif()

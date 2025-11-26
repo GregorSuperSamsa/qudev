@@ -1,3 +1,11 @@
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2025 Georgi Georgiev, Samsa Ltd. <georgi@samsa.io>
+//
+// qudev - Qt wrapper around libudev
+//
+// This file is part of the qudev project.
+// See the LICENSE file in the project root for full license text.
+
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -37,4 +45,3 @@ int main(int argc, char** argv)
 
     return app.exec();
 }
-

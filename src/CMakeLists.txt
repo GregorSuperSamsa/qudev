@@ -1,4 +1,11 @@
-# --- Library target ---
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2025 Georgi Georgiev, Samsa Ltd. <georgi@samsa.io>
+#
+# qudev - Qt wrapper around libudev
+#
+# This file is part of the qudev project.
+# See the LICENSE file in the project root for full license text.
+
 add_library(qudev
   qudev.cpp
   qudev_context.cpp
@@ -15,7 +22,6 @@ set_target_properties(qudev PROPERTIES
   CXX_STANDARD_REQUIRED ON
 )
 
-# --- Public header file set: ONLY the umbrella header ---
 target_sources(qudev
   PUBLIC
     FILE_SET public_headers TYPE HEADERS
@@ -25,14 +31,11 @@ target_sources(qudev
         ${PROJECT_SOURCE_DIR}/include/qudev_filters.h
         ${PROJECT_SOURCE_DIR}/include/qudev_device.h
   PRIVATE
-    # Private headers (shown in IDE, not installed as public)
     qudev_context.h
     qudev_enumerator.h
     qudev_monitor.h
 )
 
-# Public include dir (for consumers): only 'include'
-# Private include dir: this src folder (internals)
 target_include_directories(qudev
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -41,7 +44,6 @@ target_include_directories(qudev
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# Deps
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBUDEV REQUIRED IMPORTED_TARGET libudev)

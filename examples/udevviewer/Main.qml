@@ -28,92 +28,122 @@ ApplicationWindow
   title: "Qudev Viewer"
 
   header: ToolBar {
-    RowLayout {
+    ColumnLayout {
       anchors.fill: parent
-      spacing: 6
+      spacing: 4
 
-      ToolButton {
-        id: scanButton
-        enabled: !service.scanning
-        onClicked: service.scan()
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 6
+        ToolButton {
+          id: scanButton
+          enabled: !service.scanning
+          onClicked: service.scan()
 
-        contentItem: RowLayout {
-          anchors.fill: parent
-          anchors.margins: 6
-          spacing: 6
+          contentItem: RowLayout {
+            anchors.fill: parent
+            anchors.margins: 6
+            spacing: 6
 
-          Label {
-            text: service.scanning ? qsTr("Scanning devices…") : qsTr("Scan devices")
-            Layout.alignment: Qt.AlignVCenter
+            Label {
+              text: service.scanning ? qsTr("Scanning devices…") : qsTr("Scan devices")
+              Layout.alignment: Qt.AlignVCenter
+            }
+            BusyIndicator {
+              running: service.scanning
+              visible: running
+              Layout.preferredWidth:  32
+              Layout.preferredHeight: 32
+              Layout.alignment: Qt.AlignVCenter
+            }
           }
-          BusyIndicator {
-            running: service.scanning
-            visible: running
-            Layout.preferredWidth:  32
-            Layout.preferredHeight: 32
-            Layout.alignment: Qt.AlignVCenter
+        }
+
+        ToolButton {
+          id: monitorButton
+          onClicked: {
+            if (service.monitoring)
+              service.stopMonitoring()
+            else
+              service.startMonitoring()
           }
+
+          contentItem: RowLayout {
+            anchors.fill: parent
+            anchors.margins: 6
+            spacing: 6
+
+            Label {
+              text: service.monitoring ? qsTr("Stop monitoring") : qsTr("Start monitoring")
+              Layout.alignment: Qt.AlignVCenter
+            }
+
+            BusyIndicator {
+              running: service.monitoring
+              visible: running
+              Layout.preferredWidth:  32
+              Layout.preferredHeight: 32
+              Layout.alignment: Qt.AlignVCenter
+            }
+          }
+        }
+
+        ToolButton {
+          contentItem: RowLayout {
+            anchors.fill: parent
+            anchors.margins: 6
+            spacing: 6
+
+            Label {
+              text: qsTr("Clear")
+              Layout.alignment: Qt.AlignVCenter
+            }
+          }
+          enabled: !service.scanning
+          onClicked: {
+            deviceModel.clear()
+
+            Qt.callLater(function() {
+              treeView.forceLayout()
+              if (treeView.rows > 0)
+                treeView.positionViewAtRow(0, Qt.AlignTop)
+              else
+                treeView.contentY = 0
+            })
+          }
+        }
+
+        Item { Layout.fillWidth: true }
+
+        ToolButton {
+          contentItem: RowLayout {
+            anchors.fill: parent
+            anchors.margins: 6
+            spacing: 6
+
+            Label {
+              text: qsTr("Filters")
+              Layout.alignment: Qt.AlignVCenter
+            }
+          }
+          onClicked: filtersDrawer.open()
         }
       }
 
-      ToolButton {
-        id: monitorButton
-        onClicked: {
-          if (service.monitoring)
-            service.stopMonitoring()
-          else
-            service.startMonitoring()
+      TextField {
+        id: searchField
+        Layout.fillWidth: true
+        Layout.margins: 4
+        placeholderText: qsTr("Filter devices dynamically...")
+
+        onTextChanged: {
+          deviceSearchModel.filterText = text
+          Qt.callLater(function() {
+              treeView.forceLayout()
+              if (treeView.rows > 0)
+                  treeView.positionViewAtRow(0, Qt.AlignTop)
+          })
         }
-
-        contentItem: RowLayout {
-          anchors.fill: parent
-          anchors.margins: 6
-          spacing: 6
-
-          Label {
-            text: service.monitoring ? qsTr("Stop monitoring") : qsTr("Start monitoring")
-            Layout.alignment: Qt.AlignVCenter
-          }
-
-          BusyIndicator {
-            running: service.monitoring
-            visible: running
-            Layout.preferredWidth:  32
-            Layout.preferredHeight: 32
-            Layout.alignment: Qt.AlignVCenter
-          }
-        }
-      }
-
-      ToolButton {
-        contentItem: RowLayout {
-          anchors.fill: parent
-          anchors.margins: 6
-          spacing: 6
-
-          Label {
-            text: qsTr("Clear")
-            Layout.alignment: Qt.AlignVCenter
-          }
-        }
-        enabled: !service.scanning
-        onClicked: deviceModel.clear()
-      }
-
-      Item { Layout.fillWidth: true }
-
-      ToolButton {
-        contentItem: RowLayout {
-          anchors.fill: parent
-          anchors.margins: 6
-          spacing: 6
-
-          Label {
-            text: qsTr("Filters")
-            Layout.alignment: Qt.AlignVCenter
-          }
-        }
-        onClicked: filtersDrawer.open()
       }
     }
   }
@@ -125,6 +155,15 @@ ApplicationWindow
     anchors.bottomMargin: 10
     clip: true
 
+    ScrollBar.vertical: ScrollBar {
+      policy: ScrollBar.AsNeeded
+    }
+
+    // (optional, if you ever get horizontal overflow)
+    ScrollBar.horizontal: ScrollBar {
+      policy: ScrollBar.AsNeeded
+    }
+
     columnWidthProvider: function(col) {
       return treeView.width - treeView.leftMargin + treeView.rightMargin;
     }
@@ -135,7 +174,7 @@ ApplicationWindow
 
     selectionModel: ItemSelectionModel {}
 
-    model: deviceModel
+    model: deviceSearchModel
 
     delegate: Item {
       readonly property real itemPadding: 15

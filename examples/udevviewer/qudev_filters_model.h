@@ -16,7 +16,7 @@
 
 
 /**
- * @file qudev_device_filters_model.h
+ * @file qudev_filters_model.h
  * @brief QML-facing model for editing and persisting QudevFilters.
  */
 
@@ -35,9 +35,11 @@ class QudevFiltersModel : public QObject
 
 public:
     /**
-     * @brief Construct a filters model with an optional parent.
+     * @brief Construct a filters model.
+     *
+     * @param parent Optional QObject parent.
      */
-    explicit QudevFiltersModel(QObject* parent = nullptr);
+     explicit QudevFiltersModel(QObject* parent = nullptr);
 
     /**
      * @brief Return the current filter configuration as a map.

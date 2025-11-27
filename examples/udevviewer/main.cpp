@@ -12,7 +12,8 @@
 
 #include "qudev_service.h"
 #include "qudev_device_model.h"
-#include "qudev_device_filters_model.h"
+#include "qudev_filters_model.h"
+#include "qudev_device_search_model.h"
 
 
 int main(int argc, char** argv)
@@ -23,6 +24,7 @@ int main(int argc, char** argv)
     QCoreApplication::setApplicationName("qudevviewer");
 
     QudevDeviceModel deviceModel;
+    QudevDeviceSearchModel deviceSearchModel;
     QudevFiltersModel filtersModel;
     QudevService service;
     // Initially load filters if any
@@ -34,9 +36,12 @@ int main(int argc, char** argv)
         service.setFilters(filtersModel.toQudevFilters());
     });
 
+    deviceSearchModel.setSourceModel(&deviceModel);
+
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("service", &service);
     engine.rootContext()->setContextProperty("deviceModel",   &deviceModel);
+    engine.rootContext()->setContextProperty("deviceSearchModel",   &deviceSearchModel);
     engine.rootContext()->setContextProperty("filtersModel", &filtersModel);
 
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));

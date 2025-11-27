@@ -6,7 +6,7 @@
 // This file is part of the qudev project.
 // See the LICENSE file in the project root for full license text.
 
-#include "qudev_device_filters_model.h"
+#include "qudev_filters_model.h"
 
 #include <QVariantMap>
 #include <QVariantList>

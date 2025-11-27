@@ -14,8 +14,10 @@ add_executable(udevviewer
   qudev_service.h
   qudev_device_model.cpp
   qudev_device_model.h
-  qudev_device_filters_model.cpp
-  qudev_device_filters_model.h
+  qudev_filters_model.cpp
+  qudev_filters_model.h
+  qudev_device_search_model.cpp
+  qudev_device_search_model.h
   resources.qrc
 )
 

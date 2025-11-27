@@ -85,6 +85,7 @@ You should see a dark Material-themed window:
 - **Scan devices** enumerates devices matching the current filters.
 - **Start monitoring / Stop monitoring** toggles live monitoring of new events.
 - **Filters** opens a side drawer where you can edit `QudevFilters` from QML.
+- **Filter devices dynamically...** enables realtime filtering of the found devices by any user input.
 - The device tree groups devices by subsystem and exposes properties, sysfs
   attributes, tags, and other metadata.
 
